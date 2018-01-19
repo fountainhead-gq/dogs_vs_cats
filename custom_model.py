@@ -1,5 +1,6 @@
 # coding: utf-8
 
+
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -143,7 +144,34 @@ def inception_resnetv2(img_height, img_width=None, dropout=0.25):
     return model_inceptionResNetV2
 
 
-# Fine-tune
+
+
+def fine_tuning(ft_model, X_train, y_train, X_valid, y_valid, img_height, freeze_layer, batch_size=64, epochs=3, dropout=0.25, weights=None):
+
+    for layer in ft_model.layers:
+        layer.trainable = True
+    for layer in ft_model.layers[:freeze_layer]:
+        layer.trainable = False
+        
+    ft_model.compile(optimizer='adadelta', loss='binary_crossentropy', metrics=['accuracy'])
+    
+    if weights:
+        ft_model.load_weights(weights)
+
+    logs_file = 'finetune-%s-{val_loss:.4f}.h5'%str(freeze_layer)
+    path = os.getcwd()
+    path_logs = os.path.join(path, logs_file)
+
+    early_stop = EarlyStopping(monitor='val_loss', patience=2)
+    model_check = ModelCheckpoint(path_logs, monitor='val_loss', save_best_only=True)
+    
+    ft_model.fit(x=X_train, y=y_train, batch_size=batch_size, epochs=epochs, validation_data=(X_valid, y_valid),
+              callbacks=[early_stop, model_check])
+    return ft_model
+
+
+
+
 def fine_tune(ft_model, preprocess, X_train, y_train, X_valid, y_valid, img_height, freeze_layer, batch_size=64, epochs=3, dropout=0.25, weights=None):
 
     x = Input(shape=(img_height, img_height, 3))
@@ -236,19 +264,32 @@ class LossHistory(Callback):
         plt.show()  
 
 
+# def show_loss(Model):
+#     fig, ax = plt.subplots(2,2)
+#     ax = ax.flatten()
+#     his_model = Model.history
+#     history = his_model.history
+    
+#     ax[0].plot(history['acc'],color='b',label="Train acc")
+#     legend = ax[0].legend(loc='best', shadow=True)
+    
+#     ax[1].plot(history['val_acc'],color='r',label="Validation acc")
+#     legend = ax[1].legend(loc='best', shadow=True)
+    
+#     ax[2].plot(history['loss'],color='g',label="Train loss")
+#     legend = ax[2].legend(loc='best', shadow=True)
+#     ax[3].plot(history['val_loss'],color='c',label="Valid loss")
+#     legend = ax[3].legend(loc='best', shadow=True)
+
 def show_loss(Model):
-    fig, ax = plt.subplots(2,2)
-    ax = ax.flatten()
+    fig, ax = plt.subplots(2,1)
+    # ax = ax.flatten()
     his_model = Model.history
     history = his_model.history
-    
-    ax[0].plot(history['acc'],color='b',label="Train acc")
+    ax[0].plot(history['loss'], color='b', label="loss")
+    ax[0].plot(history['val_loss'], color='r', label="val loss",axes =ax[0])
     legend = ax[0].legend(loc='best', shadow=True)
-    
-    ax[1].plot(history['val_acc'],color='r',label="Validation acc")
+
+    ax[1].plot(history['acc'], color='b', label="accuracy")
+    ax[1].plot(history['val_acc'], color='r',label="val accuracy")
     legend = ax[1].legend(loc='best', shadow=True)
-    
-    ax[2].plot(history['loss'],color='g',label="Train loss")
-    legend = ax[2].legend(loc='best', shadow=True)
-    ax[3].plot(history['val_loss'],color='c',label="Valid loss")
-    legend = ax[3].legend(loc='best', shadow=True)

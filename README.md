@@ -53,7 +53,7 @@
 | InceptionV3                              | 10     | 0.07607 | >220    |
 | Xception                                 | 10     | 0.05390 | 90      |
 | inceptionResNetV2                        | 10     | 0.06508 | <150    |
-| Xception(finetune)                       | 3      | 0.04496 | <30     |
+| Xception(finetune)                       | 8      | 0.04205 | <20     |
 | InceptionV3 + Xception + inceptionResNetV2 | 10     | 0.03826 | <12     |
 
 
