@@ -128,6 +128,7 @@ def inception_resnetv2(img_height, img_width=None, dropout=0.25):
     if not img_width:
         img_width = img_height
     input_tensor = Input(shape=(img_height, img_width, 3))
+    input_tensor = Lambda(inception_resnet2_process)(input_tensor)  # 以为加了，补上
     base_model = InceptionResNetV2(input_tensor=input_tensor, weights='imagenet', include_top=False)
     
     for layers in base_model.layers:
@@ -283,13 +284,12 @@ class LossHistory(Callback):
 
 def show_loss(Model):
     fig, ax = plt.subplots(2,1)
-    # ax = ax.flatten()
     his_model = Model.history
     history = his_model.history
     ax[0].plot(history['loss'], color='b', label="loss")
     ax[0].plot(history['val_loss'], color='r', label="val loss",axes =ax[0])
     legend = ax[0].legend(loc='best', shadow=True)
 
-    ax[1].plot(history['acc'], color='b', label="accuracy")
-    ax[1].plot(history['val_acc'], color='r',label="val accuracy")
+    ax[1].plot(history['acc'], color='g', label="accuracy")
+    ax[1].plot(history['val_acc'], color='c',label="val accuracy")
     legend = ax[1].legend(loc='best', shadow=True)
