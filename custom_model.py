@@ -41,8 +41,11 @@ def vgg_16(img_height, img_width=None, dropout = 0.25):
     
     if not img_width:
         img_width = img_height
-        
-    base_model = VGG16(input_shape=(img_height, img_width, 3), weights='imagenet', include_top=False)
+		
+    input_tensor = Input(shape=(img_height, img_width, 3))
+    input_tensor = Lambda(vgg16_process)(input_tensor)
+	base_model = VGG16(input_tensor, weights='imagenet', include_top=False)	
+    # base_model = VGG16(input_shape=(img_height, img_width, 3), weights='imagenet', include_top=False)
     for layers in base_model.layers:
         layers.trainable = False
         
@@ -61,8 +64,11 @@ def vgg_16(img_height, img_width=None, dropout = 0.25):
 def resnet_50(img_height, img_width=None, dropout = 0.25):
     if not img_width:
         img_width = img_height
-        
-    base_model = ResNet50(input_shape=(img_height, img_width, 3), weights='imagenet', include_top=False)
+		
+    input_tensor = Input(shape=(img_height, img_width, 3))
+    input_tensor = Lambda(renet50_process)(input_tensor)
+	base_model = ResNet50(input_tensor, weights='imagenet', include_top=False)	
+    # base_model = ResNet50(input_shape=(img_height, img_width, 3), weights='imagenet', include_top=False)
     
     for layers in base_model.layers:
         layers.trainable = False
