@@ -26,7 +26,7 @@ def exp_pic_size(path):
     heights, widths = [], []
     for filenames in tqdm(os.listdir(path)):
         img = load_img(os.path.join(path, filenames))
-        x = img_to_array(img)
+        x = img_to_array(img) # this is a Numpy array with shape (n_c, n_w, n_h)
         heights.append(x.shape[0])
         widths.append(x.shape[1])
         
