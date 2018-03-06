@@ -39,3 +39,11 @@ def exp_pic_size(path):
     plt.ylabel('height')
     plt.show()
 
+
+def visualise_image(path_img):
+    plt.figure(figsize=(15, 12))
+    for i in range(15):
+        plt.subplot(3, 5, i+1)
+        img = load_img(os.path.join(path_img, os.listdir(path_img)[i]))
+        plt.title(os.listdir(path_img)[i])
+        plt.imshow(img) 	
