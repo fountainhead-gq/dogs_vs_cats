@@ -47,3 +47,27 @@ def visualise_image(path_img):
         img = load_img(os.path.join(path_img, os.listdir(path_img)[i]))
         plt.title(os.listdir(path_img)[i])
         plt.imshow(img) 	
+		
+		
+# predict_img(model_inceptionV3, path_test, X_test_299.shape[0])
+def predict_img(MODE, path_test, X_test_num, img_size=None):
+    import random
+    if not img_size:
+        img_size = (299, 299)
+        
+    plt.figure(figsize=(15, 12))
+    for i in range(1, 21): 
+        img = cv2.imread(os.path.join(path_test, '%d.jpg'% random.randint(1, X_test_num)))
+        img = cv2.resize(img, img_size)
+        x = img.copy()
+        x.astype(np.float32)
+        prediction = MODE.predict(np.expand_dims(x, axis=0))[0]
+        plt.subplot(4, 5, i)
+        
+        if prediction < 0.5:
+            plt.title('cat %.2f%%' % (100 - prediction*100))
+        else:
+            plt.title('dog %.2f%%' % (prediction*100))
+        
+        plt.axis('off')
+        plt.imshow(x[:,:,::-1]) # convert BGR to RGB		
